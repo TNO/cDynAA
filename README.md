@@ -1,22 +1,47 @@
-# Welcome to the home of cDynAA and pyDynAA
+DynAA discrete event simulation engine for C and Python
+=======================================================
 
-This repository is the public gate for the discrete event simulation engine cDynAA and its python front-end, pyDynAA.
+DynAA  is a high-performance simulation engine based on discrete event specifications. Developed in C++ for extreme speed and minimal resource consumption, DynAA provides a robust foundation for modelling complex computing systems. Its architecture supports domain-specific extensions, enabling developers to create modelling layers tailored to their application domains. These layers define components and interactions, while DynAA ensures accurate scheduling and event handling during simulations.
 
-The development of this simulation engine started in 2013 within the Dutch company TNO.  It's development is now made public in 2026.
+The DynAA code base includes:
 
-**cDynAA** is a high-performance, low memory footprint discrete event simulation (DES) engine.  It was started in 2013, as the base simulation engine for distributed sensor systems.
-It quickly evolved to simulation of embedded computing systems, with capabilities to model and simulate small snippets of program running on many, spatially distributed, networked processors.
-At this time, cDynAA was developed in Java due to its portability.  Soon, it became clear that the Java virtual machine was not efficient enough for large simulations.
+ pyDynAA, a Python wrapper built with Cython . This integration allows developers to implement event handlers in Python while retaining the option to accelerate performance-critical components using Cython. This flexibility makes DynAA suitable for both rapid prototyping and high-performance simulation tasks.
 
-In 2015, the development team was invited to work together with QTech (TUDelft, TNO) on a simulator for quantum networks -- NetSquid.
-The DynAA team ported the engine to C++ and called it cDynAA.  It also created a python shell (interface layer) using Cython.  We call that shell **pyDynAA**.  
-The resulting engine became extremely fast, able to handle large number of components with a low memory footprint.
+- *cDynAA* is the C++ port of DynAA(a library originally written in Java) core layer. Like the java core of DynAA, it is the base simulation engine for several other domain specific simulators, each of which includes a specific *model layer*.
 
-Based on experience of the first years, the team kept the **core** layer (cDynAA/pyDynAA) separate from the domains specific libraries that target a certain domain.  
-This way, it is possible to write simulators for different domains using the same principle and underlying engine.
-Examples of simulators written with cDynAA are:
+- *pyDynAA* is a Python wrapper around the C++ DynAA core.
+The wrapping is done using Cython and supports event handler callback functions in pure Python, as well as in Cython.
+Because the pyDynAA package includes Cython definitions of the core classes (Event, Entity, etc.), a model layer using pyDynAA can itself (optionally) implement speed critical components in Cython.
 
-* [NetSquid](https://netsquid.org/) - The **Net**work **S**imulator for **Qu**antum **I**nformation using **D**iscrete events (NetSquid) is a software tool for the modelling and simulation of scalable quantum networks developed at QuTech. The goal of NetSquid is to enable scientists and engineers to design the future quantum internet as well as modular quantum computing architectures.
-* [nexussim](https://github.com/TNO/nexussim) - NexusSim is a cutting-edge simulator designed to assess the performance of applications deployed across the cloud-fog-edge nexus. It empowers researchers and developers to model, analyze, and optimize interactions in distributed systems, uncovering insights into resource usage and application behavior across all layers of the computing continuum.
+## Installation
 
-This first README is just a corner stone for the transfer of the project from the internal repositories to the external and public one.
+See the [INSTALL.md](INSTALL.md) file for instructions of how to install the package as a user or [INSTALL-SOURCE.md](INSTALL-SOURCE.md) for how to build and install from the source repository as a developer.
+
+The developers and creators are listed in the [AUTHORS](AUTHORS.md) file.
+The user license can be found in the [LICENSE](LICENSE.md) file.
+
+
+## License
+DynAA will releases under the Apache 2.0 license, a permissive framework that facilitates widespread adoption. 
+This license allows unrestricted use, modification, and redistribution, including the creation of proprietary derivative works. Importantly, there are no co-owned patents in the DynAA code base, eliminating potential legal complications.
+The user license can be found in the [LICENSE](LICENSE.md) file.
+
+
+## Versions
+For historical reasons, and for use in the NetSquid Community the versions 1.x are kept in this repository.  There is no further development on these versions -- only bug fixes.
+
+The current development follows v2.X onwards, which has a better design, is faster, and fixes many unsafe memory issues from versions 1.X.
+
+We strongly advise using version 2.X onwards.
+
+Restrictions on the requirements.txt file for dependencies are based on preserving support for older versions of python.  Example, most recent versions of cysignals require python 3.12 or higher.  We do not, so we limit the use of cysignals currently to v1.12.2.
+
+## Known issues
+
+### For developers
+
+- The cDynAA tests do not work on Ubuntu Linux versions up from Ubuntu 24.00.  That is not related to the cDynAA library itself, but the test library used (catch.h) which uses OS signals that were deprecated in newer versions of Ubuntu.  A modernization of the cDynAA test is in the roadmap, but not yet done.  Tests work fine in older Linux versions.
+
+- Some features used in the development code (e.g. generation of wheels) from the setuptools are deprecated in python versions >= 3.13.  The development of the code is temporarily limited to python versions >= 3.6 and <= 3.12 for this reason.  Modernization of the wheel generation is planned.
+
+
