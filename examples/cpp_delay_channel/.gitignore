@@ -1,0 +1,8 @@
+run_delay_channel
+*.d
+*.o
+*.out.*
+GSYMS
+GTAGS
+GPATH
+GRTAGS

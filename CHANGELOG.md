@@ -1,0 +1,163 @@
+CHANGELOG
+=========
+
+**Important**: if pyDynAA or cDynAA fails to build or the tests fail, try cleaning the building environment before building again e.g.:
+```
+make clean
+make && make tests
+```
+This will clean up any lingering object or library files (.o, .so, etc.) that may be causing problems.
+
+For details concerning new features please refer to documentation, which can be built locally with `make docs`.
+
+Snapshot
+---------
+2026-02-06 Removed internal information from repository as part of the OS preparation.
+2026-02-22 Transferred base files to open repository.
+
+
+
+---------------------------------------------
+
+The following changelogs track older versions that were not open source.  Kept in here for references and history.
+
+v2.0.1 Final private version (Julio)
+-----------
+2025-01-2 Julio solved small bug on method name of EventReport(istriggered)
+2024-11-2 Julio commented CI/CD deployment stages as we are not deploying to netsquid server anymore.  Commented because we should deploy to somewhere else.
+2024-11-2 Julio fixed building wheel to use pyproject.toml according to new python practice
+2024-11-2 Julio removed deployment of distribution to netsquid server
+2024-11-2 Julio removed checks for dirty building -- rethinking profiling and coverage
+2024-11-2 Julio removed version.py and returned code to setup.py.  Due to details on the wheel backend builder which now does not invoke setup.py directly.
+
+
+2021-11-3 Julio
+---------------
+Eliminated reprime() operation, which was long deprecated.
+
+
+2021-10-01 Rob
+--------------
+
+- Changed from C+11 to C++17 for cdynaa and pydynaa compilation.
+
+2021-07-08 Rob
+--------------
+
+- Removed support for Python 3.5. Minimal Python version is now 3.6.
+
+2021-06-17 Rob
+--------------
+
+- Adoped latest _version.py_ from NetSquid, which introduces several extra helper functions.
+- Updated profiling builds to work as in NetSquid, including a check for dirty builds.
+- Added support for `v*-develop` and `v*-deploy` protected branches to Gitlab CI script. These branches act as development and deploy branches for major versions that are not the focus of master branch e.g. `v2-develop`, or when v2 is merged into master, `v1-develop`, etc.
+
+2021-02-25 Martijn
+------------------
+
+- Changed Cython language level from '2' to '3str', and fixed some module import paths in the process.
+- Updated minimum Cython version to 0.29.22
+
+2021-02-16 Rob
+--------------
+
+- Optimised the removal of internal event handlers used to track atomic event expressions. Runtime scaling reduced from super-linear to constant.
+
+2020-12-18 Martijn
+------------------
+
+- Added support for python 3.9.
+
+2020-07-27 Martijn, Rob
+-----------------------
+
+- Added a `make profile` target that builds pyDynAA with cython profiling enabled. In this case `.profile` is appended to the local portion of the version string (i.e. after a "+").
+
+2020-04-07 Rob
+--------------
+
+- Added a `test()` method to `pydynaa` package to run all discoverable tests.
+- Added a test-deploy stage to the CI pipeline to test that deploys to pypi server install using pip and pass unit tests.
+- Development versions are now bumped on minor version e.g. if were are 5 commits ahead of tag v0.8.6, the version will be 0.9.dev4.
+
+2020-03-25 Julio
+----------------
+
+- Fixed bug that anyway updated simulation time to the end time after a Python exception forces simulation to stop. 
+
+2020-02-20 Rob
+--------------
+
+- In cDynAA `EventExpression` has added method `triggeredTime()` that gives the time the expression triggered, otherwise NaN.
+- In pyDynAA `EventExpression` has the added property `triggered_time` that similarly gives the triggered time, otherwise None.
+- Added support for a _dev-deploy_ branch for deploying development versions to package server.
+- Stripped leading "v" from version number.
+
+2019-02-05 Rob
+--------------
+
+- In cDynAA `EventExpression` has added methods `atomicEventType()`, `atomicEventID()`, `atomicEventSource()`, which replace `atomicEventMask()`.
+- In pyDynAA `EventExpression` has the added properties `atomic_type`, `atomic_id` and `atomic_source`.
+
+2019-12-13 Rob
+--------------
+
+- Added `EventExpression.triggered_events()` method in pyDynA which gives a sorted list of all triggered events. Deprecates `EventExpression.triggered_event` method.
+
+2019-12-11 Rob
+--------------
+
+- Added support for `EventExpression.reprime()` method in pyDynAA.
+
+2019-12-06 Rob
+--------------
+
+The use of event expressions has been redesigned in both cDynAA and pyDynAA. Changes to the public interfaces include:
+
+- EventExpressions are _waited_ on by entities using a handler object in the same way events are waited for. Continuous wait is now also supported. For example, in pyDynAA one can do `entity._wait{_once}(handler, expression=evexpr)`.
+- Event expression handlers can similarly be _dismissed_ e.g. as `Entity._dismiss(handler, expression=evexpr)` or `Entity._dismiss(handler)`.
+- An `ExpressionHandler` object can be used to wait on event expressions, which is a subclass of EventHandler with the same properties e.g. priority, safe guards, etc. The callback function used to initialise the handler takes an EventExpression object as its only parameter.
+- When an _atomic_ EventExpression is triggered it stores a copy of the event that triggered it. This way a user can determine from the event expressions given by a callback function what the sources and types of the events were that triggered the atomic expressions.
+- An EventExpression object can be _waited_ on by multiple handlers, which will be executed in order of priority. By default a new call to wait will reset an event expression i.e. re-prime all its triggered atomic expressions. Atomic expressions are waited on using the highest priority of the waiting set of handlers.
+- An ExpressionHandler object can be used in different calls to wait i.e. it is independent of the EventExpression(s) it is asked to wait for.
+- Shared pointers to EventExpressions and ExpressionHandlers are stored in the handler registry until they are dismissed. That means there are no memory issues if the user relinquishes their owernship e.g. lets them leave scope.
+- Support for copying of EventExpression in pydynaa, including a `copy()` method.
+- SimulationEngine in cdynaa has methods to get the inspector interfaces of the simulation scheduler and registry.
+- SimulationEngine in pydynaa has a `get_expression_handlers` method.
+
+Modified and removed/deprecated existing functionality:
+
+- If the event expression `A = B | C` is triggered due to `B` while `C` was also due to trigger at the same instant, then `C` will no longer be triggered in this expression. If a handler is waiting continuously on this expression, then the expression is reset and triggered again for `C` (at which point `B` is no longer triggered).
+- EventExpression has its `wait(callback)` and `wait()` methods removed (cDynAA) or deprecated (pyDynAA).
+- EventExpression is no longer a sub-class of Entity.
+- The handler registry class (used by SimulationEngine to reigster EventHandlers per event mask) can also (un)register ExpressionHandler objects. These handlers are registered to wait per `EventExpression` object (both are managed by shared pointers)
+- `RegisteredHandler<T>` is a C++ template consisting of a `shared_ptr<T>` and a boolean 'once' value, where T can be an EventHandler or an ExpressionHandler. The boolean indicates whether the handler in single shot (once) or not. The `RegisteredHandler<T>` objects is ordered in a set using the handlers priority (see the `operator<` method).
+- The `HandlerSet` in cDynAA is modified to be an ordered set of `RegisteredHandler<EventHandler>`, so that the 'once' boolean flag is managed by the registry rather than being a private attribute of EventHandlers. This means event handlers can be consistently used in multiple different calls to wait (it was the case that re-using an event handler could incorrectly change its previous 'once' value).
+
+
+2019-11-28 Rob
+--------------
+
+- Event in cdynaa privately stores its type (EventType) internally using a shared pointer to avoid copying of EventType object everytime Event is passed by value. This also fixes a longstanding bug in MacOS.
+- The constructor of Event and the `Entity.schedule{Now,After,At}` methods are overloaded in cdynaa to support also passing of an existing shared pointer of EventTypes.
+
+2019-11-18 Rob
+--------------
+
+- Added support for Python 3.8 to CI pipeline.
+- Version module also finds version tags not in direct history of the current branch.
+
+2019-11-05 Rob
+--------------
+
+- Moved `version.py` out of _pydynaa_ package into repository root directory.
+- The version is now automatically calculated from the latest version tag in the Git branch's history. If HEAD is ahead of the last version tag `vX.Y.Z` by `N > 0` commits, then the is version bumped up to the development version: `vX.Y.{Z+1}.dev{N-1}+{commit hash}`.
+- The package version is now automatically stored in generated `pydynaa/version.txt` file (untracked).
+
+2019-10-28 Rob
+--------------
+
+- Support for versioning and binary packaging of pyDynAA.
+- Repository housekeeping, including creation of this file.
+- Support for deploying binary package, also via CI pipeline.

@@ -1,0 +1,4 @@
+pip>0.19
+sphinx
+aafigure>=0.6
+recommonmark>=0.7.1

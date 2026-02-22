@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=41", "cython", "wheel", "setuptools-git-versioning>=1.8,<3", "cysignals"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pydynaa"
+dynamic = ["version", "dependencies", "classifiers", "keywords", "requires-python", "readme", "description"]
+
+[tool.setuptools-git-versioning]
+enabled = true
+version_file = "pydynaa/version.txt"
+dirty_template = "{tag}.dev{ccount}+{sha}.dirty"
+template = "v{tag}"
+
+[tool.setuptools.package-data]
+# include VERSION file to a package
+pydynaa = ["version.txt"]
+
+[tool.setuptools]
+# this package will read some included files in runtime, avoid installing it as .zip
+zip-safe = false

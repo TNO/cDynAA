@@ -1,0 +1,278 @@
+before_script:
+    # Install required dependencies
+    - make requirements
+
+    # Setup SSH for deploying to server
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - >
+      if [[ ! -z "$SSH_PRIVATE_KEY" ]]; then
+        echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null;
+      fi
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
+stages:
+    - build-cdynaa
+    - test-cdynaa
+    - build-pydynaa
+    - test-pydynaa
+
+# Build cDynAA
+# ============
+# Images in dockerhub
+
+# Docker image is Ubuntu 18.04 with Python 3.6 to ensure support
+# for older systems
+build-cdynaa:18.04-cp36:
+    image: rknegjens/netsquidci:18.04-cp36
+    stage: build-cdynaa
+    only:
+        - merge_requests
+        - master
+        - /^v.*-develop/
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make cdynaa
+    artifacts:
+        when: on_success
+        expire_in: 60 min
+        untracked: true
+
+# Docker image is Ubuntu 18.04 with Python 3.7
+build-cdynaa:18.04-cp37:
+    image: rknegjens/netsquidci:18.04-cp37
+    stage: build-cdynaa
+    only:
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make cdynaa
+    artifacts:
+        when: on_success
+        expire_in: 60 min
+        untracked: true
+
+# Docker image is Ubuntu 18.04 with Python 3.8
+build-cdynaa:18.04-cp38:
+    image: rknegjens/netsquidci:18.04-cp38
+    stage: build-cdynaa
+    only:
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make cdynaa
+    artifacts:
+        when: on_success
+        expire_in: 60 min
+        untracked: true
+
+# Docker image is Ubuntu 18.04 with Python 3.9
+build-cdynaa:18.04-cp39:
+    image: mpapendrecht/netsquidci:18.04-cp39
+    stage: build-cdynaa
+    only:
+        - merge_requests
+        - master
+        - /^v.*-develop/
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make cdynaa
+    artifacts:
+        when: on_success
+        expire_in: 60 min
+        untracked: true
+
+# Test cDynAA
+# ===========
+
+# Docker image is Ubuntu 18.04 with Python 3.6 to ensure support
+# for older systems
+test-cdynaa:18.04-cp36:
+    image: rknegjens/netsquidci:18.04-cp36
+    stage: test-cdynaa
+    only:
+        - merge_requests
+        - master
+        - /^v.*-develop/
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make cdynaa_tests
+    dependencies:
+        - build-cdynaa:18.04-cp36
+
+# Docker image is Ubuntu 18.04 with Python 3.7
+test-cdynaa:18.04-cp37:
+    image: rknegjens/netsquidci:18.04-cp37
+    stage: test-cdynaa
+    only:
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make cdynaa_tests
+    dependencies:
+        - build-cdynaa:18.04-cp37
+
+# Docker image is Ubuntu 18.04 with Python 3.8
+test-cdynaa:18.04-cp38:
+    image: rknegjens/netsquidci:18.04-cp38
+    stage: test-cdynaa
+    only:
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make cdynaa_tests
+    dependencies:
+        - build-cdynaa:18.04-cp38
+
+# Docker image is Ubuntu 18.04 with Python 3.9
+test-cdynaa:18.04-cp39:
+    image: mpapendrecht/netsquidci:18.04-cp39
+    stage: test-cdynaa
+    only:
+        - merge_requests
+        - master
+        - /^v.*-develop/
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make cdynaa_tests
+    dependencies:
+        - build-cdynaa:18.04-cp39
+
+# Build pyDynAA
+# =============
+
+# Docker image is Ubuntu 18.04 with Python 3.6 to ensure support
+# for older systems
+build-pydynaa:18.04-cp36:
+    image: rknegjens/netsquidci:18.04-cp36
+    stage: build-pydynaa
+    only:
+        - merge_requests
+        - master
+        - /^v.*-develop/
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make inplace
+    artifacts:
+        when: on_success
+        expire_in: 60 min
+        untracked: true
+    dependencies:
+        - build-cdynaa:18.04-cp36
+
+# Docker image is Ubuntu 18.04 with Python 3.7
+build-pydynaa:18.04-cp37:
+    image: rknegjens/netsquidci:18.04-cp37
+    stage: build-pydynaa
+    only:
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make inplace
+    artifacts:
+        when: on_success
+        expire_in: 60 min
+        untracked: true
+    dependencies:
+        - build-cdynaa:18.04-cp37
+
+# Docker image is Ubuntu 18.04 with Python 3.8
+build-pydynaa:18.04-cp38:
+    image: rknegjens/netsquidci:18.04-cp38
+    stage: build-pydynaa
+    only:
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make inplace
+    artifacts:
+        when: on_success
+        expire_in: 60 min
+        untracked: true
+    dependencies:
+        - build-cdynaa:18.04-cp38
+
+# Docker image is Ubuntu 18.04 with Python 3.9
+build-pydynaa:18.04-cp39:
+    image: mpapendrecht/netsquidci:18.04-cp39
+    stage: build-pydynaa
+    only:
+        - merge_requests
+        - master
+        - /^v.*-develop/
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make inplace
+    artifacts:
+        when: on_success
+        expire_in: 60 min
+        untracked: true
+    dependencies:
+        - build-cdynaa:18.04-cp39
+
+# Test pyDynAA
+# ============
+
+# Docker image is Ubuntu 18.04 with Python 3.6 to ensure support
+# for older systems
+test-pydynaa:18.04-cp36:
+    image: rknegjens/netsquidci:18.04-cp36
+    stage: test-pydynaa
+    only:
+        - merge_requests
+        - master
+        - /^v.*-develop/
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make pydynaa_tests
+    dependencies:
+        - build-pydynaa:18.04-cp36
+
+# Docker image is Ubuntu 18.04 with Python 3.7
+test-pydynaa:18.04-cp37:
+    image: rknegjens/netsquidci:18.04-cp37
+    stage: test-pydynaa
+    only:
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make pydynaa_tests
+    dependencies:
+        - build-pydynaa:18.04-cp37
+
+# Docker image is Ubuntu 18.04 with Python 3.8
+test-pydynaa:18.04-cp38:
+    image: rknegjens/netsquidci:18.04-cp38
+    stage: test-pydynaa
+    only:
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make pydynaa_tests
+    dependencies:
+        - build-pydynaa:18.04-cp38
+
+# Docker image is Ubuntu 18.04 with Python 3.9
+test-pydynaa:18.04-cp39:
+    image: mpapendrecht/netsquidci:18.04-cp39
+    stage: test-pydynaa
+    only:
+        - merge_requests
+        - master
+        - /^v.*-develop/
+        - /^.*-stable/
+        - /^v.*-deploy/
+    script:
+        - make pydynaa_tests
+    dependencies:
+        - build-pydynaa:18.04-cp39

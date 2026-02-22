@@ -1,0 +1,12 @@
+/src/*.o
+/src/*.old
+/src/*.orig
+/include/*.orig
+run_*
+/.deps/*.d
+*.a
+*.so
+/GTAGS
+/GPATH
+/GRTAGS
+/GSYMS
