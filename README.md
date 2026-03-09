@@ -27,6 +27,9 @@ This license allows unrestricted use, modification, and redistribution, includin
 The user license can be found in the [LICENSE](LICENSE.md) file.
 
 
+## DOI
+This repository has a [DOI](https://doi.org/10.82135/wjxf-my75) to be used for citations and easy referrencing.
+
 ## Versions
 For historical reasons, and for use in the NetSquid Community the versions 1.x are kept in this repository.  There is no further development on these versions -- only bug fixes.
 
