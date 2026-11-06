@@ -1,0 +1,13 @@
+API reference
+=============
+
+Below is the API reference for the classes available in this package.
+The available classes are summarised by this schematic overview (note: not all class methods are shown):
+
+.. image:: _static/pydynaa.png
+    :align: center
+
+.. toctree::
+    :caption: Classes
+
+    pydynaa

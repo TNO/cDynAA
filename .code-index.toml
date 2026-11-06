@@ -1,0 +1,18 @@
+# This file contains meta data that is processed by the TNO code index (see http://code-index.tno.nl).
+# You can keep it up to date.
+#
+# To work this file should be named '.code-index.toml' or 'code-index.toml'
+# and be placed in the root directory of the git repository.
+#
+exclude = false
+name = "cDynAA/pyDynAA"
+description = "(c)DynAA is a super-fast discrete event simulation engine.xa0cDynAA is the C++ port of the DynAA core layer.\nLike the java core of DynAA, it is the base simulation engine for several other domain specific simulators, each of which includes a specific model layer.\npyDynAA is a Python wrapper around the C++ DynAA core.\nThe wrapping is done using Cython and supports event handler callback functions in pure Python, as well as in Cython.\nBecause the pyDynAA package includes Cython definitions of the core classes (Event, Entity, etc.), a model layer using pyDynAA can itself (optionally) implement speed critical components in Cython."
+branch = "master"
+maintainer = "Julio de Oliveira Filho"
+notes = "See DynAA project for the original Java files."
+logo = "https://ci.tno.nl/gitlab/uploads/-/system/group/avatar/516/DynAAScope_240_1_.jpg"
+links = [ "https://ci.tno.nl/gitlab/DynAA/cDynAA", "https://ci.tno.nl/gitlab/DynAA/cDynAA/-/wikis/home",]
+partners = []
+developers = ["Julio de Oliveira Filho", "Rob Knegjens", "Coen van Leeuwen", "Joost Adriaanse"]
+keywords = [ "Simulation", "Simulator", "Discrete-event simulation", "Modelling", "multi-agent simulator",]
+libraries = []

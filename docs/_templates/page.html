@@ -1,0 +1,21 @@
+{% extends "!page.html" %}
+
+{% block footer %}
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $(".highlight-default .highlight").each(function() {
+            if ($(this).find(".gp").length > 0) {
+             $(this).prepend("<div class='codebtn btn btn-neutral float-right'><div class='gp'>>>></div><div>");
+             $(this).children("pre").contents().filter(function() {return this.nodeType === 3;}).wrap("<span></span>").end();
+            }
+        });
+        $(".highlight-default .highlight .codebtn").click(function() {
+            $(this).parent().children("pre").find(".gp").toggleClass("hidden");
+            var traceback_elem = $(this).parent().children("pre").find(".gt, .go");
+            traceback_elem.toggleClass("hidden");
+            traceback_elem.nextUntil(".gp, .go").toggleClass("hidden");
+
+        })
+    });
+</script>
+{% endblock %}
