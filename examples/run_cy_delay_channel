@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Get directory of this script
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-# Add pydynaa package to PYTHONPATH
-export PYTHONPATH=$PYTHONPATH:${DIR}/../pyDynAA/
-
-python3 ${DIR}/cy_delay_channel/run.py

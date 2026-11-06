@@ -1,7 +1,0 @@
-run_delay_channel
-*.d
-*.o
-GSYMS
-GTAGS
-GPATH
-GRTAGS

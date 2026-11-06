@@ -1,8 +1,0 @@
-run_cpp_delay_channel
-delay_channel.exe
-delay_channel/delay_channel.o
-delay_channel/GPATH
-delay_channel/GRTAGS
-delay_channel/GSYMS
-delay_channel/GTAGS
-delay_channel/delay_channel.d
