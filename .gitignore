@@ -1,0 +1,12 @@
+build/
+dist/
+wheel/
+.eggs/
+*.egg-info/
+.vscode
+*.pyc
+pyDynAA/
+cysignals_crash_logs/
+version.txt
+*.scratch
+tags
